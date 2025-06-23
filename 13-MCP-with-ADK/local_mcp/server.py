@@ -74,7 +74,8 @@ def get_table_schema(table_name: str) -> dict:
 
 
 def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
-    """Queries a table with an optional condition.
+    """
+    Queries a table with an optional condition.
 
     Args:
         table_name: The name of the table to query.
@@ -101,7 +102,8 @@ def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
 
 
 def insert_data(table_name: str, data: dict) -> dict:
-    """Inserts a new row of data into the specified table.
+    """
+    Inserts a new row of data into the specified table.
 
     Args:
         table_name (str): The name of the table to insert data into.
@@ -144,7 +146,8 @@ def insert_data(table_name: str, data: dict) -> dict:
 
 
 def delete_data(table_name: str, condition: str) -> dict:
-    """Deletes rows from a table based on a given SQL WHERE clause condition.
+    """
+    Deletes rows from a table based on a given SQL WHERE clause condition.
 
     Args:
         table_name (str): The name of the table to delete data from.
