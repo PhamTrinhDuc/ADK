@@ -7,7 +7,7 @@ python-dotenv==1.1.0
 deprecated==1.2.18
 python-dotenv==1.1.0
 loguru==0.7.3
-
+a2a-sdk==0.2.8
 # adk web
 # sudo lsof -i :8000 or sudo netstat -tulnp | grep :8000
 # sudo kill -9 12345
