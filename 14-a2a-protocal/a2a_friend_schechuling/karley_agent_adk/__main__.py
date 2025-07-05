@@ -60,6 +60,7 @@ def main():
     )
 
     agent = create_agent()
+
     
     runner = Runner(
       app_name="karley agent", 
@@ -81,8 +82,6 @@ def main():
       http_handler=request_handler
     )
     
-    logger.info(server.routes())
-
     uvicorn.run(server.build(), host=HOST, port=PORT)
 
   except MissingAPIKeyError as e:

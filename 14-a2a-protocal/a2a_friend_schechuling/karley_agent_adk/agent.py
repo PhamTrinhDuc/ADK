@@ -1,13 +1,17 @@
 import random
-from datetime import date, datetime, timedelta
-from google.adk.agents import LlmAgent
+import os
+from google.adk.agents import Agent
 from tools import get_availability
+from dotenv import load_dotenv
 
+load_dotenv()
 
-def create_agent() -> LlmAgent: 
-  return LlmAgent(
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+
+def create_agent() -> Agent: 
+  return Agent(
     name="Karley_Agent", 
-    model="gemini-2.5-flash-preview-04-17",
+    model="gemini-2.0-flash",
     instruction="""
       **Role:** You are Karley's personal scheduling assistant. 
       Your sole responsibility is to manage her calendar and respond to inquiries 

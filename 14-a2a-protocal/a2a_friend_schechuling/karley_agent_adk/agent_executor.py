@@ -3,7 +3,6 @@ import asyncio
 from loguru import logger
 from collections.abc import AsyncGenerator
 
-from a2a.server.agent_execution import AgentExecutor
 from a2a.server.events.event_queue import EventQueue
 from a2a.server.agent_execution.context import RequestContext
 from a2a.server.tasks import TaskUpdater
@@ -34,10 +33,12 @@ class KarleyAgentExcecutor:
     
     updater = TaskUpdater(event_queue=event_queue, task_id=context.task_id, context_id=context.context_id)
     if not context.current_task: 
-      updater.submit()
+      await updater.submit()
 
-    updater.start_work()
-    await self._process_request(new_message=context.message, 
+    await updater.start_work()
+    await self._process_request(new_message=types.UserContent(
+                                  parts=convert_a2a_parts_to_genai(context.message.parts),
+                                ),
                                 session_id=context.context_id, 
                                 task_updater=updater)
 
@@ -48,22 +49,21 @@ class KarleyAgentExcecutor:
                              new_message: types.Content, 
                              session_id: str, 
                              task_updater: TaskUpdater) -> None: 
-    session_obj = self._upsert_session(session_id=session_id)
-    session_id = session_obj.session_id  
+    session_obj = await self._upsert_session(session_id=session_id)
+    session_id = session_obj.id  
 
     async for event in self._run_agent(session_id=session_id, new_message=new_message): 
-      if event.is_final_response(): 
+      if event.is_final_response():
         parts = convert_genai_parts_to_a2a(
           parts=event.content.parts if event.content and event.content.parts else []
         )
 
-        logger.debug("Yielding final response: %s", parts)
-        task_updater.add_artifact(parts=parts)
-        task_updater.complete()
+        await task_updater.add_artifact(parts=parts)
+        await task_updater.complete()
         break
       if not event.get_function_calls(): 
-        logger.debug("Yielding update response")
-        task_updater.update_status(
+        logger.info("Yielding update response")
+        await task_updater.update_status(
           state=TaskState.working, 
           message=task_updater.new_agent_message(
             parts=event.content.parts if event.content and event.content.parts else []
@@ -76,7 +76,9 @@ class KarleyAgentExcecutor:
                  session_id: str, 
                  new_message: types.Content) -> AsyncGenerator[Event, None]: 
     return self.runner.run_async(
-      user_id="karley_agent", session_id=session_id, new_message=new_message
+      user_id="karley_agent", 
+      session_id=session_id, 
+      new_message=new_message
     )
     
   async def _upsert_session(self, session_id: str): 
@@ -85,7 +87,6 @@ class KarleyAgentExcecutor:
       app_name=self.runner.app_name, user_id="karley_agent", session_id=session_id
     )
 
-    # If doensn't exist, create new one
     if session is None: 
       session = await self.runner.session_service.create_session(
         app_name=self.runner.app_name, user_id="karley_agent", session_id=session_id
@@ -97,7 +98,7 @@ class KarleyAgentExcecutor:
 
 
 def convert_a2a_parts_to_genai(parts: list[Part]) -> list[types.Part]: 
-  return [convert_genai_part_to_a2a(part=part) for part in parts]
+  return [convert_a2a_part_to_genai(part=part) for part in parts]
 
 
 def convert_a2a_part_to_genai(part: Part) -> types.Part: 

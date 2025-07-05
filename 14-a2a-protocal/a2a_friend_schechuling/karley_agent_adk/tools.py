@@ -1,4 +1,10 @@
+import sys
+import os
+
 from datetime import datetime, timedelta
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 from utils import generate_calander
 
 KARLEY_CALENDAR = generate_calander()
