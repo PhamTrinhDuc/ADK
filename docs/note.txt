@@ -1,0 +1,5 @@
+# Đi lên 2 cấp thư mục
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+# Đi lên 1 cấp, rồi vào folder khác
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'other_folder'))
