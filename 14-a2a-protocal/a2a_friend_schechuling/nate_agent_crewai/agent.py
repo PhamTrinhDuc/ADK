@@ -6,7 +6,7 @@ from datetime import date
 from crewai.llm import LLM
 from crewai.agent import Agent, Task
 from crewai.crew import Crew, Process
-from .tools import AvailabilityTool
+from tools import AvailabilityTool
 
 
 

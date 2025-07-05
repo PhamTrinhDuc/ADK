@@ -1,7 +1,12 @@
+import sys
+import os
 from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 from typing import Type
 from crewai.tools import BaseTool
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from utils import generate_calander
 
 

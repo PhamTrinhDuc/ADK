@@ -10,7 +10,7 @@ from a2a.types import (
 from a2a.server.tasks import InMemoryTaskStore
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.apps import A2AStarletteApplication
-from .agent_executor import SchedulingAgent
+from agent_executor import SchedulingAgentExecutor
 
 
 HOST = "localhost"
@@ -52,7 +52,7 @@ def main():
     )
 
     request_handler = DefaultRequestHandler(
-      agent_executor=SchedulingAgent(), 
+      agent_executor=SchedulingAgentExecutor(), 
       task_store=InMemoryTaskStore(),
     )
 

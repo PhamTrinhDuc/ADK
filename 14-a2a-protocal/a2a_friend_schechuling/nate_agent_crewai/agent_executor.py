@@ -1,3 +1,4 @@
+from loguru import logger
 
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.events import EventQueue
@@ -11,7 +12,7 @@ from a2a.types import (
 )
 from a2a.utils.errors import ServerError
 
-from .agent import SchedulingAgent
+from agent import SchedulingAgent
 
 class SchedulingAgentExecutor(AgentExecutor): 
   """AgentExecutor for the scheduling agent."""
@@ -24,6 +25,7 @@ class SchedulingAgentExecutor(AgentExecutor):
     self, 
     context: RequestContext , 
     event_queue: EventQueue) -> None:
+
     """Executes the scheduling agent."""
     if not context.task_id or not context.context_id: 
       raise ValueError("RequestContext must have task_id and context_id")
@@ -45,7 +47,7 @@ class SchedulingAgentExecutor(AgentExecutor):
     try: 
       result = self.agent.invoke(query=query)
     except Exception as e:
-      print(f"Error invoking agent: {e}")
+      logger.error(f"Error invoking agent: {e}")
       raise ServerError(error=InternalError()) from e
     
     parts = [Part(root=TextPart(text=result))]
