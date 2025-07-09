@@ -1,4 +1,5 @@
-
+import sys
+import os
 from loguru import logger
 
 from a2a.server.agent_execution import AgentExecutor, RequestContext
@@ -13,7 +14,9 @@ from a2a.types import (
 )
 from a2a.utils.errors import ServerError
 
-from .agent import KaitlynAgent
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+from agent import KaitlynAgent
 
 class KaitlynAgentExecutor(AgentExecutor): 
   """Kaitlyn's Scheduling AgentExecutor."""

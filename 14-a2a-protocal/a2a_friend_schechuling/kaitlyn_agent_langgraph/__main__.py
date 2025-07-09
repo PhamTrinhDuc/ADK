@@ -2,6 +2,7 @@ import os
 import sys
 import uvicorn
 from loguru import logger
+from dotenv import load_dotenv
 import httpx
 from a2a.types import (
    AgentCapabilities,
@@ -11,7 +12,11 @@ from a2a.types import (
 from a2a.server.tasks import InMemoryPushNotifier, InMemoryTaskStore
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
-from .agent_executor import KaitlynAgentExecutor
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+load_dotenv()
+
+from agent_executor import KaitlynAgentExecutor
 
 
 

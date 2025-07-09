@@ -1,4 +1,6 @@
 import random
+import sys
+import os
 from collections.abc import AsyncIterable
 from datetime import date, datetime, timedelta
 from typing import Any, List, Literal
@@ -9,9 +11,10 @@ from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
-from .tools import get_availability
 
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
+from tools import get_availability
 
 memory = MemorySaver()
 
@@ -21,7 +24,6 @@ class ResponseFormat(BaseModel):
 
   status: Literal["input_required", "completed", "error"] = "input_required"
   message: str
-
 
 
 class KaitlynAgent:
