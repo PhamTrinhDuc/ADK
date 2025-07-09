@@ -1,4 +1,4 @@
-
+import sys
 import os
 import uvicorn
 from dotenv import load_dotenv
@@ -17,7 +17,9 @@ from google.adk.memory.in_memory_memory_service import InMemoryMemoryService
 from google.adk.sessions import InMemorySessionService
 
 from agent import create_agent
-from agent_executor import KarleyAgentExcecutor
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from agent_executor import KarleyAgentExecutor
 
 load_dotenv()
 
@@ -70,7 +72,7 @@ def main():
       session_service=InMemorySessionService(),
     )
 
-    agent_executor = KarleyAgentExcecutor(runner=runner)
+    agent_executor = KarleyAgentExecutor(runner=runner)
 
     request_handler = DefaultRequestHandler(
       agent_executor=agent_executor, 
