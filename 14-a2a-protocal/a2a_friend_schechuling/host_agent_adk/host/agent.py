@@ -2,6 +2,8 @@ import httpx
 import asyncio
 import json
 import uuid
+import os
+import sys
 from datetime import datetime
 from typing import Any, AsyncIterable, List
 from loguru import logger
@@ -22,6 +24,9 @@ from google.adk.tools.tool_context import ToolContext
 from google.adk.artifacts import InMemoryArtifactService
 from google.adk.memory.in_memory_memory_service import InMemoryMemoryService
 from google.adk.sessions import InMemorySessionService
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 from host.remote_agent_connection import RemoteAgentConnections
 from host.tools import (
   book_pickleball_court,
@@ -103,7 +108,7 @@ class HostAgent:
     **Core Directives:**
 
     *   **Initiate Planning:** When asked to schedule a game, first determine who to invite and the desired date range from the user.
-    *   **Task Delegation:** Use the `send_message` tool to ask each friend for their availability.
+    *   **Task Delegation:** Use the `send_message` tool to ask each friend for their availability and receive response from agent.
         *   Frame your request clearly (e.g., "Are you available for pickleball between 2024-08-01 and 2024-08-03?").
         *   Make sure you pass in the official name of the friend agent for each message request.
     *   **Analyze Responses:** Once you have availability from all friends, analyze the responses to find common timeslots.
@@ -184,7 +189,7 @@ class HostAgent:
     payload = {
       "message": {
         "role": "user", 
-        "parts": [{"type": "text",  "text": "task"}],
+        "parts": [{"type": "text",  "text": task}],
         "messageId": message_id,
         "contextId": context_id,
         "taskId": task_id
@@ -194,7 +199,6 @@ class HostAgent:
     message_request = SendMessageRequest(id=message_id, params=MessageSendParams.model_validate(payload))
 
     send_response: SendMessageResponse = await client.send_message(message=message_request)
-    print("send response", send_response)
 
     if not isinstance(
       send_response.root, SendMessageSuccessResponse
@@ -202,14 +206,15 @@ class HostAgent:
       print("Received a non-success or non-task response. Cannot proceed.")
       return
 
-    response_content = send_response.root.model_dump_json(exclude_none=True)
-    json_content = json.load(response_content)
+    response_content = send_response.root.model_dump_json(indent=2)
+    json_content = json.loads(response_content)
 
     resp = []
     if json_content.get("result", {}).get("artifacts", {}): 
       for artifact in json_content['result']['artifacts']: 
         if artifact.get('parts'): 
           resp.extend(artifact['parts'])
+    print(f"Response: {resp}")
     return resp
     
 
@@ -224,7 +229,7 @@ def _get_initalized_agent_sync():
 
     print("initializing host agent")
     hosting_agent_instance = await HostAgent.create(
-      remote_agent_addresses=friend_agent_urls
+        remote_agent_addresses=friend_agent_urls
     )
     print("HostAgent initialized")
     return hosting_agent_instance.create_agent()
@@ -242,3 +247,4 @@ def _get_initalized_agent_sync():
       raise
 
 root_agent = _get_initalized_agent_sync()
+
