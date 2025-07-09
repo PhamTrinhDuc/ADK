@@ -38,7 +38,8 @@ async def main() -> None:
       raise RuntimeError("Failed to fetch public agent card") 
     
     client = A2AClient(
-      httpx_client=http_client, agent_card=nate_card_use
+      httpx_client=http_client, 
+      agent_card=nate_card_use
     )
 
     messge_payload = Message(
